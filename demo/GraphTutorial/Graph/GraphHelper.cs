@@ -54,5 +54,47 @@ namespace GraphTutorial
             }
         }
         // </GetEventsSnippet>
+
+        public static async Task<ISearchQueryCollectionPage> GetItem(string connectionId, string query)
+        {
+            var requests = new List<SearchRequestObject>()
+            {
+                new SearchRequestObject
+                {
+                    EntityTypes = new List<EntityType>()
+                    {
+                        EntityType.ExternalItem
+                    },
+                    ContentSources = new List<String>()
+                    {
+                        $"/external/connections/{connectionId}"
+                    },
+                    Query = new SearchQuery
+                    {
+                        Query_string = new SearchQueryString
+                        {
+                            Query = query
+                        }
+                    },
+                    From = 0,
+                    Size = 5,
+                    Stored_fields = new List<String>()
+                    {
+                        "partNumber",
+                        "name",
+                        "description",
+                        "price",
+                        "inventory",
+                        "appliances@odata.type",
+                        "appliances",
+                    }
+                }
+            };
+
+            return await graphClient.Search
+                .Query(requests)
+                .Request()
+                .PostAsync();
+        }
     }
 }

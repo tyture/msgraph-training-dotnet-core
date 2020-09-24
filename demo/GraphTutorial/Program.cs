@@ -3,12 +3,14 @@
 
 using Microsoft.Extensions.Configuration;
 using System;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace GraphTutorial
 {
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             Console.WriteLine(".NET Core Graph Tutorial\n");
 
@@ -48,6 +50,7 @@ namespace GraphTutorial
                 Console.WriteLine("0. Exit");
                 Console.WriteLine("1. Display access token");
                 Console.WriteLine("2. List calendar events");
+                Console.WriteLine("3. Get Items");
 
                 try
                 {
@@ -72,6 +75,24 @@ namespace GraphTutorial
                     case 2:
                         // List the calendar
                         ListCalendarEvents();
+                        break;
+                    case 3:
+                        // Search data
+                        try
+                        {
+                            Console.Write("ConnectionID is: ");
+                            var connectionId = Console.ReadLine();
+                            Console.Write("Query is: ");
+                            var query = Console.ReadLine();
+                            var items = await GraphHelper.GetItem(connectionId, query);
+                            var serializedObject = JsonConvert.SerializeObject(items, Formatting.Indented);
+                            System.Console.WriteLine(serializedObject);
+                        }
+                        catch (System.FormatException)
+                        {
+                            // Set to invalid value
+                            Console.WriteLine("Query is invalid!");
+                        }
                         break;
                     default:
                         Console.WriteLine("Invalid choice! Please try again.");
